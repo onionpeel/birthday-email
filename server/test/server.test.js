@@ -40,7 +40,7 @@ describe('ROUTES', () => {
   describe('GET/birthdays', () => {
     it('should return all of the birthday objects', done => {
       request(app)
-        .get('/')
+        .get('/birthdays')
         .expect(200)
         .end(done)
     });

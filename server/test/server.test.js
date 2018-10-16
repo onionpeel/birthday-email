@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const chai = require('chai');
 chai.use(require('sinon-chai'));
 const {app} = require('./../server');
-const {Birthday} = require('./../models/birthday');
+const {User} = require('./../models/user');
 const {findBirthdays} = require('./../cron/findandSendBirthdays/findBirthdays');
 const {MailOptions} = require('./../cron/findandSendBirthdays/MailOptions');
 const {sendEmailCallback} = require('./../cron/findandSendBirthdays/sendEmailCallback');
@@ -18,15 +18,15 @@ const {task} = require('./../cron/cron');
 beforeEach(populateBday);
 
 describe('ROUTES', () => {
-  describe('POST/birthday', () => {
-    it('should add a new birthday object in the database', (done) => {
-      let bday = new Birthday({
-        email: "jeb.mail.com",
+  describe('POST/user', () => {
+    it('should add a new user object in the database', (done) => {
+      let bday = new User({
+        email: "jeb@mail.com",
         date: "11/11"
       });
 
       request(app)
-        .post('/birthday')
+        .post('/user')
         .send(bday)
         .expect(200)
         .expect((res) => {
@@ -37,10 +37,10 @@ describe('ROUTES', () => {
     });
   });
 
-  describe('GET/birthdays', () => {
-    it('should return all of the birthday objects', done => {
+  describe('GET/users', () => {
+    it('should return all of the user objects', done => {
       request(app)
-        .get('/birthdays')
+        .get('/users')
         .expect(200)
         .end(done)
     });
@@ -74,7 +74,7 @@ describe('FindBirthdays Module', () => {
     it('should invoke a stub for Birthday.find()', () => {
       let findBirthdaysSpy = sinon.spy(findBirthdays);
       let testDate = dateToday();
-      let BirthdayStub = sinon.stub(Birthday, 'find');
+      let BirthdayStub = sinon.stub(User, 'find');
       //If BirthdayStub resolves with an email, a real email will be sent.
       //To avoid this, it resolves an empty array.
       BirthdayStub.resolves([]);

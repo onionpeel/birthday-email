@@ -1,5 +1,5 @@
 const {dateToday} = require('./../../utilities/dateToday');
-const {Birthday} = require('./../../models/birthday');
+const {User} = require('./../../models/user');
 
 const bday = [{
   email: `learnjavascriptyes@gmail.com`,
@@ -7,8 +7,8 @@ const bday = [{
 }];
 
 const populateBday = done => {
-  Birthday.deleteMany({}).then(() => {
-    return Birthday.insertMany(bday);
+  User.deleteMany({}).then(() => {
+    return User.insertMany(bday);
   }).then(() => done());
 };
 

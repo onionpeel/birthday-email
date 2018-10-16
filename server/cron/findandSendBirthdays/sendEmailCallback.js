@@ -1,8 +1,8 @@
 let {MailOptions} = require('./MailOptions');
 const {transporter} = require('./transporter');
 
-let sendEmailCallback = birthday => {
-  let mailTo = birthday.email;
+let sendEmailCallback = user => {
+  let mailTo = user.email;
   let mailOptions = new MailOptions(mailTo);
   transporter.sendMail(mailOptions, function(err) {
     if (err) {

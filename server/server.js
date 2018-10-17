@@ -24,33 +24,19 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', urlEncodedParser, (req, res) => {
-    // let jsonBody = req.body;
-    // let body = JSON.stringify(jsonBody);
-    // res.render('acknowledgement', {body});
-
-    // let notification = JSON.stringify(req.body);
-    // res.render('acknowledgement', {notification});
-    console.log(req.body.date)
-
     let user = new User({
       email: req.body.email,
       date: req.body.date
     });
 
-    console.log(user)
-
     user.formatDate();
+    user.createAcknowledgementDate();
 
-    console.log(user)
-
-    user.save().then(greeting => {
-      res.status(200).send(greeting);
+    user.save().then(user => {
+      res.status(200).render('acknowledgement', user);
     }).catch(err => {
       res.status(400).send(err);
     });
-
-    // res.render('acknowledgement');
-
 });
 
 // app.get('/birthdays', (req, res) => {

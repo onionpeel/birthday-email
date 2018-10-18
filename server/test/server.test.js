@@ -6,12 +6,12 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const {app} = require('./../server');
 const {User} = require('./../models/user');
-const {findBirthdays} = require('./../cron/findandSendBirthdays/findBirthdays');
-const {MailOptions} = require('./../cron/findandSendBirthdays/MailOptions');
-const {sendEmailCallback} = require('./../cron/findandSendBirthdays/sendEmailCallback');
-const {testNodemailer} = require('./../cron/findandSendBirthdays/testNodemailer');
-const {transporter} = require('./../cron/findandSendBirthdays/transporter');
-const {dateToday} = require('./../utilities/dateToday');
+const {findBirthdays} = require('./../cron/findAndSendBirthdays/findBirthdays');
+const {MailOptions} = require('./../cron/findAndSendBirthdays/MailOptions');
+const {sendEmailCallback} = require('./../cron/findAndSendBirthdays/sendEmailCallback');
+const {testNodemailer} = require('./testNodemailer');
+const {transporter} = require('./../cron/findAndSendBirthdays/transporter');
+const {dateToday} = require('./../cron/findAndSendBirthdays/dateToday');
 const {bday, populateBday} = require('./seed/seed');
 const {task} = require('./../cron/cron');
 

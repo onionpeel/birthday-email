@@ -7,6 +7,7 @@ const {User} = require('./models/user');
 const {task} = require('./cron/cron');
 const exphbs = require('express-handlebars');
 const path = require('path');
+const {createAcknowledgementDate} = require('./utility/createAcknowledgementDate');
 
 let app = express();
 let port = process.env.PORT || 3000;
@@ -16,50 +17,31 @@ let urlEncodedParser = bodyParser.urlencoded({extended: false});
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
-
 // task.start();
 
 app.get('/', (req, res) => {
   res.render('home', {title: 'Birthday Email'})
 });
 
+
 app.post('/', urlEncodedParser, (req, res) => {
+  console.log(req.body.date)
     let user = new User({
       email: req.body.email,
       date: req.body.date
     });
 
     user.formatDate();
-    user.createAcknowledgementDate();
 
+    console.log(user)
     user.save().then(user => {
+      user.date = createAcknowledgementDate(user);
       res.status(200).render('acknowledgement', user);
     }).catch(err => {
       res.status(400).send(err);
     });
 });
 
-// app.get('/birthdays', (req, res) => {
-//     Birthday.find((err, birthdays) => {
-//       if (err) {
-//         return res.status(500).send(err);
-//       }
-//       return res.status(200).send(birthdays);
-//     });
-// });
-//
-// app.post('/birthday', (req, res) => {
-//   let birthday = new Birthday({
-//     email: req.body.email,
-//     date: req.body.date
-//   });
-//
-//   birthday.save().then(birthday => {
-//     res.status(200).send(birthday);
-//   }).catch(err => {
-//     res.status(400).send(err);
-//   });
-// });
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

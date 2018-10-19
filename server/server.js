@@ -10,7 +10,7 @@ const path = require('path');
 const {createAcknowledgementDate} = require('./utility/createAcknowledgementDate');
 
 let app = express();
-let port = process.env.PORT || 3000;
+let port = process.env.PORT;
 app.use(bodyParser.json());
 
 let urlEncodedParser = bodyParser.urlencoded({extended: false});
@@ -30,12 +30,14 @@ app.post('/', urlEncodedParser, (req, res) => {
       date: req.body.date,
       name: req.body.first_name
     });
+
     user.formatDate();
     user.save().then(user => {
       user.date = createAcknowledgementDate(user);
       res.status(200).render('acknowledgement', user);
 
     }).catch(err => {
+      //The error message to be rendered is based on the error object.
       for (let key in err.errors) {
         if(err.errors[key].value == false) {
           err.errorMessage = `A valid ${key} is required`
@@ -56,17 +58,3 @@ app.listen(port, () => {
 });
 
 module.exports = {app};
-
-
-
-
-// for (let key in err.errors) {
-//   if(err.errors[key].value == false) {
-//     err.errorMessage = `A valid ${key} is required`
-//   } else if (err.errors.date.value === "-undefined-undefined") {
-//     err.errorMessage = 'A valid birthdate is required'
-//   } else {
-//     let errorMessage = err.errors[key].message;
-//     err.errorMessage = errorMessage
-//   }
-// };

@@ -3,6 +3,7 @@ const validator = require('validator');
 const {splitDate} = require('./../utility/splitDate');
 const {formattedDateArray} = require('./../utility/formattedDateArray');
 
+//This schema is used in the definition of the "User" model
 let UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,7 +34,8 @@ let UserSchema = new mongoose.Schema({
   }
 });
 
-//Defines a string property on the user object that has removed any zeroes that are the first digit.  '1993-03-09' => '1993-3-9'
+//Defines a string property on the user object that has removed any zeroes that
+//are the first digit.  '1993-03-09' => '1993-3-9'
 UserSchema.methods.formatDate = function() {
   let user = this;
   let dateArray = splitDate(user);

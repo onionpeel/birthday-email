@@ -6,6 +6,7 @@ const bday = [{
   date: dateToday()
 }];
 
+//This function wipes clean and then repopulates the collection used in testing
 const populateBday = done => {
   User.deleteMany({}).then(() => {
     return User.insertMany(bday);

@@ -1,3 +1,5 @@
+//Creates an object that is used as an argument in transporter.sendMail().
+//This object's properties provide the structure of the email message.
 const MailOptions = function (to) {
   this.from = `learnjavascriptyes@gmail.com`;
   this.to = to;

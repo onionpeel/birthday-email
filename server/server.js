@@ -25,20 +25,28 @@ app.get('/', (req, res) => {
 
 
 app.post('/', urlEncodedParser, (req, res) => {
-  console.log(req.body.date)
     let user = new User({
       email: req.body.email,
-      date: req.body.date
+      date: req.body.date,
+      name: req.body.first_name
     });
-
     user.formatDate();
-
-    console.log(user)
     user.save().then(user => {
       user.date = createAcknowledgementDate(user);
       res.status(200).render('acknowledgement', user);
+
     }).catch(err => {
-      res.status(400).send(err);
+      for (let key in err.errors) {
+        if(err.errors[key].value == false) {
+          err.errorMessage = `A valid ${key} is required`
+        }else if (err.errors[key].value === '-undefined-undefined') {
+          err.errorMessage = 'A valid birthdate is required'
+        } else {
+          let errorMessage = err.errors[key].message;
+          err.errorMessage = errorMessage
+        }
+      };
+      res.status(400).render('error', err);
     });
 });
 
@@ -48,3 +56,17 @@ app.listen(port, () => {
 });
 
 module.exports = {app};
+
+
+
+
+// for (let key in err.errors) {
+//   if(err.errors[key].value == false) {
+//     err.errorMessage = `A valid ${key} is required`
+//   } else if (err.errors.date.value === "-undefined-undefined") {
+//     err.errorMessage = 'A valid birthdate is required'
+//   } else {
+//     let errorMessage = err.errors[key].message;
+//     err.errorMessage = errorMessage
+//   }
+// };

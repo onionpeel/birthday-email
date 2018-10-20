@@ -9,6 +9,7 @@ The project requires access to an email account from which the birthday messages
 The cron job will work in development, but it may need to be adapted based on the production environment as there may be other ways of setting up scheduled events.
 
 ## Setup
+For testing and development, a `config.json` file with account credentials needs to be created in the `config` directory.  To test whether the project is successfully sending emails, refer to the instructions in `testNodemailer.js`.
 
 ```
 {
@@ -31,7 +32,7 @@ The cron job will work in development, but it may need to be adapted based on th
 }
 ```
 
+Instructions for production setup will be forthcoming.
 
-
-
+## Hat tip
 The code for the form layout can be found at https://github.com/archer920/NodeIntroduction

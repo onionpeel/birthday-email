@@ -1,0 +1,34 @@
+1.  Edgecase:  Leap year birthdays
+
+A.  Set cron job to fire once everyday
+B.  Test for findBirthdays
+C.  Test for MailOptions constructor
+D.  Set up configs:  1) Test, development, production, 2) transporter
+E.  Reconfigure findBirthdays() so that it uses async/await
+G.  Use config variables anywhere email address is exposed (findBirthdays, tests)
+8.  Create ReadMe
+9.  Does the structure need to have everything inside of the server directory as it currently is?
+10.  Put the ethereal account configurations in testNodemailer.js into the config file.
+11.  Prevent duplicate emails
+12.  Is urlEncodedParser necessary?
+13.  How is error handling dealt with in a production environment?  Is a messaged rendered to the client?
+14.  Is it acceptable to use 'if' statements in the catch block (as with POST /)?
+15.  Set configs for passwords in production environment (this is done on the command line, heroku config set:VARIABLE="value")
+
+
+add the following to .gitignore:
+server/config/config.json
+issues.txt
+scratchpad.js
+
+
+The code for the client side is at: https://github.com/archer920/NodeIntroduction
+youtube version: https://www.youtube.com/watch?v=rEdQ6fvSNOk&feature=youtu.be
+website: https://stonesoupprogramming.com/2017/06/27/use-handlebars-and-express-in-node-js/
+
+
+Finished tasks:
+2.  Need to handle incorrect date entries(ex, if mm/dd is entered as 13/44)
+7.  Use validator to validate email
+F.  Add comments to explain code
+D.  Set up configs:  1) Test, development 2) transporter

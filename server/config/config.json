@@ -1,0 +1,18 @@
+{
+  "test": {
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://localhost:27017/BirthdayEmailTest",
+    "EMAILUSER": "learnjavascriptyes@gmail.com",
+    "EMAILPASSWORD": "closure#",
+    "TESTMAILUSER": "zn2b53zns6vqw4dp@ethereal.email",
+    "TESTMAILPASSWORD": "btfYUUZP6keJ4BcSH8"
+  },
+  "development": {
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://localhost:27017/BirthdayEmail",
+    "EMAILUSER": "learnjavascriptyes@gmail.com",
+    "EMAILPASSWORD": "closure#",
+    "TESTMAILUSER": "zn2b53zns6vqw4dp@ethereal.email",
+    "TESTMAILPASSWORD": "btfYUUZP6keJ4BcSH8"
+  }
+}

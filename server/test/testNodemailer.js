@@ -1,13 +1,13 @@
-/*
-This is code provided by nodemailer for testing.  It is configured so that
-emails are sent from the account specified in the birthday-email app.  A test
-email is sent to an account at https://ethereal.email/.  A user account was generated
-at that site with the following credentials:
-Username	zn2b53zns6vqw4dp@ethereal.email
-Password	btfYUUZP6keJ4BcSH8
-If this account has been timed out, another can be easily created and used to run
-the test for this app.
-*/
+// This is code provided by nodemailer for testing.  It is configured so that
+// emails are sent from the account specified in the birthday-email app.  A test
+// email is sent to an account at https://ethereal.email/.  A user account was generated
+// at that site with the following credentials:
+let userName = process.env.TESTMAILUSER
+let password = process.env.TESTMAILPASSWORD
+
+// If this account has been timed out, another can be easily created and used to run
+// the test for this app.
+
 
 const nodemailer = require('nodemailer');
 const {transporter} = require('./transporter');
@@ -24,8 +24,8 @@ let testNodemailer = function() {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'learnjavascriptyes@gmail.com',
-        pass: 'closure#'
+        user: process.env.EMAILUSER,
+        pass: process.env.EMAILPASSWORD
       }
     });
 

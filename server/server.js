@@ -17,6 +17,7 @@ let urlEncodedParser = bodyParser.urlencoded({extended: false});
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+//Start the cron job
 // task.start();
 
 app.get('/', (req, res) => {

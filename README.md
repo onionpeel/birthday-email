@@ -10,7 +10,8 @@ The cron job will work in development, but it may need to be adapted based on th
 
 ## Setup
 
-```{
+```
+{
   "test": {
     "PORT": 3000,
     "MONGODB_URI": "mongodb://localhost:27017/BirthdayEmailTest",
@@ -27,7 +28,8 @@ The cron job will work in development, but it may need to be adapted based on th
     "TESTMAILUSER": "...",
     "TESTMAILPASSWORD": "..."
   }
-}```
+}
+```
 
 
 

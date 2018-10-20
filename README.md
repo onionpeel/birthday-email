@@ -1,5 +1,7 @@
 # Birthday-Email
 
+<img src="images/BirthdayEmail.PNG" width="100">
+
 Send yourself a birthday greeting by simply providing your name, email and birthdate.  
 
 The project requires access to an email account from which the birthday messages are sent.  If Gmail is used, be sure to turn on the setting for "Allow less secure apps."  Becauae of its security structure, Gmail is not a good choice for production.  But it will work for testing and development.

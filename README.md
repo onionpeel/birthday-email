@@ -4,6 +4,7 @@ Send yourself a birthday greeting by simply providing your name, email and birth
 
 <img src="images/BirthdayEmail.PNG" width="100">
 
+## Background
 The project requires access to an email account from which the birthday messages are sent.  If Gmail is used, be sure to turn on the setting for "Allow less secure apps."  Gmail's security structure prevents it from being a good choice for production, but it will work for testing and development.
 
 The cron job will work in development, but it may need to be adapted based on the production environment as there may be other ways of setting up scheduled events.
@@ -35,4 +36,4 @@ For testing and development, a `config.json` file with account credentials needs
 Instructions for production setup will be forthcoming.
 
 ## Hat tip
-The code for the form layout can be found at https://github.com/archer920/NodeIntroduction
+The code for the input form layout can be found at https://github.com/archer920/NodeIntroduction

@@ -10,24 +10,24 @@ The project requires access to an email account from which the birthday messages
 The cron job will work in development, but it may need to be adapted based on the production environment as there may be other ways of setting up scheduled events.
 
 ## Setup
-For testing and development, a `config.json` file with account credentials needs to be created in the `config` directory.  To test whether the project is successfully sending emails, refer to the instructions in `testNodemailer.js`.
+For testing and development, a `config.json` file with email account credentials needs to be created in the `config` directory.  EMAILUSER AND EMAILPASSWORD are the variables pertaining to the email account used to send messages.  To test whether the project is successfully sending emails, refer to the instructions in `testNodemailer.js`.
 
 ```
 {
   "test": {
     "PORT": 3000,
     "MONGODB_URI": "mongodb://localhost:27017/BirthdayEmailTest",
-    "EMAILUSER": "...",
+    "EMAILUSERNAME": "...",
     "EMAILPASSWORD": "...",
-    "TESTMAILUSER": "...",
+    "TESTMAILUSERNAME": "...",
     "TESTMAILPASSWORD": "..."
   },
   "development": {
     "PORT": 3000,
     "MONGODB_URI": "mongodb://localhost:27017/BirthdayEmail",
-    "EMAILUSER": "...",
+    "EMAILUSERNAME": "...",
     "EMAILPASSWORD": "...",
-    "TESTMAILUSER": "...",
+    "TESTMAILUSERNAME": "...",
     "TESTMAILPASSWORD": "..."
   }
 }

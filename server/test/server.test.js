@@ -21,7 +21,7 @@ describe('ROUTES', () => {
   describe('POST/user', () => {
     it('should add a new user object in the database', (done) => {
       let bday = new User({
-        email: "jeb@mail.com",
+        email: "fake@mail.com",
         date: "11/11"
       });
 
@@ -50,7 +50,7 @@ describe('ROUTES', () => {
 describe('FindBirthdays Module', () => {
   describe('MailOptions()', () => {
     it('should return a mailOptions object', () => {
-      let testTo = `learnjavascriptyes@gmail.com`;
+      let testTo = process.env.EMAILUSERNAME;
       let mailOptions = new MailOptions(testTo);
       expect(mailOptions.to).to.be.eql(testTo);
       expect(mailOptions).to.have.own.property("from");
@@ -61,7 +61,7 @@ describe('FindBirthdays Module', () => {
 
   describe('sendEmailCallback()', () => {
     it('should invoke a stub for transport.sendMail()', () => {
-      let testEmail = `learnjavascriptyes@gmail.com`;
+      let testEmail = process.env.EMAILUSERNAME;
       let sendMailStub = sinon.stub(transporter, 'sendMail');
 
       sendEmailCallback(testEmail);

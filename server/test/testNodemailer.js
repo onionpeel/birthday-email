@@ -2,7 +2,7 @@
 // emails are sent from the account specified in the birthday-email app.  A test
 // email is sent to an account at https://ethereal.email/.  A user account was generated
 // at that site with the following credentials:
-let userName = process.env.TESTMAILUSER
+let userName = process.env.TESTMAILUSERNAME
 let password = process.env.TESTMAILPASSWORD
 
 // If this account has been timed out, another can be easily created and used to run
@@ -24,13 +24,13 @@ let testNodemailer = function() {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAILUSER,
+        user: process.env.EMAILUSERNAME,
         pass: process.env.EMAILPASSWORD
       }
     });
 
     let message = {
-        from: 'The Birthday Greeting App <learnjavascriptyes@gmail.com>',
+        from: `The Birthday Greeting App <${process.env.EMAILUSERNAME}>`,
         to: 'zn2b53zns6vqw4dp@ethereal.email',
         subject: 'Birthday notification test email ✔',
         text: 'This is an email sent out by testing the birthday notification app',

@@ -2,7 +2,7 @@ const {dateToday} = require('./../../cron/findAndSendBirthdays/dateToday');
 const {User} = require('./../../models/user');
 
 const bday = [{
-  email: `learnjavascriptyes@gmail.com`,
+  email: process.env.EMAILUSERNAME,
   date: dateToday()
 }];
 

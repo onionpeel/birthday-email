@@ -12,29 +12,33 @@ const {createAcknowledgementDate} = require('./utility/createAcknowledgementDate
 let app = express();
 let port = process.env.PORT;
 app.use(bodyParser.json());
-
 let urlEncodedParser = bodyParser.urlencoded({extended: false});
+
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
-//Start the cron job
-// task.start();
+// Start the cron job
+task.start();
 
+//Home page of the project
 app.get('/', (req, res) => {
   res.render('home', {title: 'Birthday Email'})
 });
 
-
+//Accept input to create a user object in the database collection
 app.post('/', urlEncodedParser, (req, res) => {
     let user = new User({
       email: req.body.email,
       date: req.body.date,
       name: req.body.first_name
     });
-
+    
+    //Remove any preceding zeroes in the date
     user.formatDate();
+    //After being saved to the database, prepare the user object to be rendered.
     user.save().then(user => {
       user.date = createAcknowledgementDate(user);
+      user.title = 'Birthday Email'
       res.status(200).render('acknowledgement', user);
 
     }).catch(err => {

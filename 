@@ -1,0 +1,23 @@
+[33m8634793[m[33m ([m[1;36mHEAD -> [m[1;32mreadme[m[33m)[m Merge branch 'master' of https://github.com/onionpeel/birthday-email into readme
+[33m63489d2[m[33m ([m[1;32mmaster[m[33m)[m 1.  Changed email account credentials throughout project to environment variables 2.  Added README file 3.  Added image folder with screenshot used in README
+[33mfd3340e[m[33m ([m[1;31morigin/master[m[33m)[m Update README.md
+[33m414ad28[m Update README.md
+[33m20334d3[m Update README.md
+[33mc05c130[m Update README.md
+[33me1500c5[m Update README.md
+[33me28fc5b[m Update README.md
+[33maa9c53f[m Update README.md
+[33m86bffd1[m 1. changed account usernames and passwords to environment variables; 2. added an image directory that contains a screenshot for the readme file
+[33m0e011ee[m Create README.md
+[33mbc7a999[m added comments throughout the project
+[33m734d116[m 1. added conditionals to catch block in POST /; 2. created error.handlebars; 3. modified UserSchema to include date regex validation; 4. updated acknowledgement.handlebars
+[33m83cf46d[m 1. moved dateToday() to findAndSendBirthdays; 2. user objects date formate to include the year; 3. deleted utitilies, created utility folder and added formattedDateArray(), createAcknowledgementDate(), splitDate(); 4. moved testNodeMailer() to test directory; 5. added a regex search to findBirthdays; 6. added call to createAcknowledgementDate to POST /
+[33ma0c0443[m changed welcome.handlebars to acknowledgement.handlebars; added splitDate(), formattedDateArray() and createAcknowledgementDate() to Userschema; refactored formatDate() in UserSchema; made changes to POST /
+[33m5e0d51a[m changed 'birthday' to 'user' for the entire project; added views directory with acknowledgement.handlebars and home.handlebars and a layouts directory with main.handlebars; changed date format from using a '/' separator to using a '-' separator
+[33mea6e6e4[m[33m ([m[1;31mheroku/master[m[33m)[m set cron time
+[33m3f7000b[m updated
+[33m1e938a2[m set cron time
+[33m23db019[m set cron time
+[33m3dc48c2[m set cron time
+[33m41f9eff[m set cron time
+[33mf4a3869[m initial commit

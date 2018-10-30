@@ -18,7 +18,7 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 // Start the cron job
-task.start();
+// task.start();
 
 //Home page of the project
 app.get('/', (req, res) => {
@@ -32,7 +32,7 @@ app.post('/', urlEncodedParser, (req, res) => {
       date: req.body.date,
       name: req.body.first_name
     });
-    
+
     //Remove any preceding zeroes in the date
     user.formatDate();
     //After being saved to the database, prepare the user object to be rendered.

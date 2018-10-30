@@ -43,17 +43,21 @@ Instructions for production setup will be forthcoming.
 4. In `server/config` create a file, `config.json`.
 Inside of `config.json` copy and paste the config object shown above in the Setup.  Fill out the credentials for the email account that will be used to send the birthday messages (`EMAILUSERNAME`, `EMAILPASSWORD`).  If you want to test Nodemailer, follow the instructions in testNodemailer.js to fill out `TESTMAILUSERNAME` and `TESTMAILPASSWORD`.  This test is not necessary to run the application.  
 5. Run MongoDB locally on your machine.  A new database and collection will be generated automatically the first time a a submission to create a birthday email is made.
-6.  Schedule a cron job in `server/cron/cron.js` by setting the string value.  For example, the following will run everyday at 4:15 pm.  
+6.  Schedule a cron job in `server/cron/cron.js` by setting `userCronTime` to a cron string value.  For example, the following will run everyday at 4:15 pm.  
 ```
 '15 16 * * *'
 ```
+If no value is set, the default time will 8:00 a.m.
 7.  Make sure all the changes are saved and execute the program:  `node server/server.js`.
 8.  Go to `localhost:3000` and make a submission.  If you want to see it work without waiting until your next birthday, set the birthdate to today's date and go back into `server/cron/cron.js` to schedule the cron job to run a few minutes after you execute `node server/server.js`.
 
 ##Notes
+Because the goal of this project was to learn fullstack development by creating a birthday email application, the test suite has been left in the code.  I
 ASYNC/await
 
-While the goal of this project was to create a birthday email application, the project could be built out further to tackle other issues such as leap year birthdays, duplicate email accounts and enabling users to revise their submission or prevent an email from being sent.
+The project could be built out further to tackle other issues such as leap year birthdays, validation of cron.schedule() inputs, duplicate email accounts and enabling users to revise their submission or prevent an email from being sent.
 
 ## Hat tip
 The code for the input form layout can be found at https://github.com/archer920/NodeIntroduction
+
+The function, `isCronValid()` is available at https://stackoverflow.com/questions/52189713/regular-expression-for-cron-expression-in-javascript

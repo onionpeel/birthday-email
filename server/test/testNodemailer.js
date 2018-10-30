@@ -10,7 +10,7 @@ let password = process.env.TESTMAILPASSWORD
 
 
 const nodemailer = require('nodemailer');
-const {transporter} = require('./transporter');
+const {transporter} = require('./../cron/findandSendBirthdays/transporter');
 
 let testNodemailer = function() {
   nodemailer.createTestAccount((err, account) => {

@@ -1,5 +1,5 @@
 const {User} = require('./../../models/user');
-const {sendEmailCallback} = require('./sendEmailCallback');
+const sendEmailCallback = require('./sendEmailCallback');
 const nodemailer = require('nodemailer');
 
 //This takes a string input from dateToday() and uses that to create a regex.
@@ -25,22 +25,36 @@ const nodemailer = require('nodemailer');
 //tests.  Stubbing with Sinon requires that wrapper stubs reference the target
 //function and the object on which that function resides.  If not for this
 //stubbing, there would be no need to put findBirthdaysSendEmail() in an object.
-// let findBirthdaysSendEmailObject = {
-//   findBirthdaysSendEmail(date) {
-//     let dateRegex = new RegExp('^\\d{4}-' + date + '$');
+// let findBirthdaysSendEmail = (date) => {
+//   let dateRegex = new RegExp('^\\d{4}-' + date + '$');
 //
-//     User.find({date: {$regex: dateRegex}})
-//       .then(users => {
-//         users.forEach(sendEmailCallback);
-//       })
-//       .catch(e => {
-//         console.log(e);
-//       });
-//   }
-// };
+//   User.find({date: {$regex: dateRegex}})
+//     .then(users => {
+//       users.forEach(sendEmailCallback);
+//     })
+//     .catch(e => {
+//       console.log(e);
+//     });
+// }
 //
-// module.exports = findBirthdaysSendEmailObject;
+//
+// module.exports = findBirthdaysSendEmail;
 
+
+// let findBirthdaysSendEmail = (date) => {
+//   let dateRegex = new RegExp('^\\d{4}-' + date + '$');
+//
+//   User.find({date: {$regex: dateRegex}})
+//     .then(users => {
+//       users.forEach(sendEmailCallback);
+//     })
+//     .then(info => {
+//       console.log(info);
+//     })
+//     .catch(e => {
+//       console.log(e);
+//     });
+// };
 
 let findBirthdaysSendEmail = (date) => {
   let dateRegex = new RegExp('^\\d{4}-' + date + '$');
@@ -53,10 +67,5 @@ let findBirthdaysSendEmail = (date) => {
       console.log(e);
     });
 };
-
-// let findBirthdaysSendEmail = () => {
-//   console.log('verrrrrrryyyyy baaaaaaaaaaaaaad');
-//
-// };
 
 module.exports = findBirthdaysSendEmail;

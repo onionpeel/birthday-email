@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {mongoose} = require('./db/mongoose');
 const {User} = require('./models/user');
-const {task} = require('./cron/cron');
+const task = require('./cron/cron');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const {createAcknowledgementDate} = require('./utility/createAcknowledgementDate');
@@ -18,7 +18,7 @@ app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
 // Start the cron job
-// task.start();
+task.start();
 
 //Home page of the project
 app.get('/', (req, res) => {

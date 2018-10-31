@@ -8,20 +8,25 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const {app} = require('./../server');
 const {User} = require('./../models/user');
-const findBirthdaysSendEmail = require('./../cron/findAndSendBirthdays/findBirthdaysSendEmail');
 const {MailOptions} = require('./../cron/findAndSendBirthdays/MailOptions');
 const {sendEmailCallback} = require('./../cron/findAndSendBirthdays/sendEmailCallback');
 const {testNodemailer} = require('./testNodemailer');
-const {transporter} = require('./../cron/findAndSendBirthdays/transporter');
-const dateToday = require('./../cron/findAndSendBirthdays/dateToday');
+const transporter = require('./../cron/findAndSendBirthdays/transporter');
 const {bday, populateBday} = require('./seed/seed');
 const cron = require('node-cron');
 const proxyquire = require('proxyquire');
-const {task} = require('./../cron/cron');
+const task = require('./../cron/cron');
 //cron
 const isCronValid = require('./../cron/cronUtilities/isCronValid');
-const {scheduleCallback, scheduleCallbackWrapper} = require('./../cron/cronUtilities/scheduleCallbackWrapper');
+const scheduleCallback = require('./../cron/cronUtilities/scheduleCallbackWrapper').scheduleCallback;
+const scheduleCallbackWrapper = require('./../cron/cronUtilities/scheduleCallbackWrapper').scheduleCallbackWrapper;
 const setCronTime = require('./../cron/cronUtilities/setCronTime');
+const dateToday = require('./../cron/cronUtilities/dateToday');
+//findAndSendBirthdays
+const findBirthdaysSendEmail = require('./../cron/findAndSendBirthdays/findBirthdaysSendEmail');
+
+const formattedDateArray = require('./../utility/formattedDateArray');
+
 
 // let findBirthdaysSendEmail = (date) => {
 //   let dateRegex = new RegExp('^\\d{4}-' + date + '$');
@@ -127,22 +132,7 @@ const setCronTime = require('./../cron/cronUtilities/setCronTime');
 //     });
 //   });
 //
-//   describe('findBirthdaysSendEmail()', () => {
-//     it('should invoke a stub that takes the place of User.find()', () => {
-//       let findBirthdaysSendEmailSpy = sinon.spy(findBirthdaysSendEmail);
-//       let testDate = dateToday();
-//       let BirthdayStub = sinon.stub(User, 'find');
-//       //If BirthdayStub resolves with an email, a real email will be sent.
-//       //To avoid this, it resolves an empty array.
-//       BirthdayStub.resolves([]);
-//
-//       findBirthdaysSendEmailSpy(testDate);
-//       expect(findBirthdaysSendEmailSpy).to.be.calledWith(testDate);
-//       expect(BirthdayStub).to.be.calledOnce;
-//
-//       BirthdayStub.restore();
-//     });
-//   });
+
 
   // describe('findBirthdaysSendEmail()', () => {
   //   it('should send an email based on the object returned from database', done => {
@@ -152,17 +142,7 @@ const setCronTime = require('./../cron/cronUtilities/setCronTime');
   //   });
   // });
 
-//   describe('dateToday()', () => {
-//     it("should return today's date with the format '(m)m-(d)d'", () => {
-//       let today = dateToday();
-//       let validator = date => {
-//         return /\d{1,2}\-\d{1,2}/.test(date);
-//       };
-//
-//       let dateCheck = validator(today);
-//       expect(dateCheck).to.be.true;
-//     });
-//   });
+
 // });
 
 // describe('cron.js', () => {
@@ -173,18 +153,7 @@ const setCronTime = require('./../cron/cronUtilities/setCronTime');
 //     });
 //   });
 //
-//   describe('scheduleCallback()', () => {
-//     describe('findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
-//       let findBirthdaysSendEmailProxy = sinon.stub().returns('invoked');
-//       let scheduleCallbackProxy = proxyquire('./../cron/cronUtilities/scheduleCallback',
-//           {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
-//
-//       it('should invoke findBirthdaysSendEmail()', () => {
-//         scheduleCallbackProxy();
-//         expect(findBirthdaysSendEmailProxy()).to.eql('invoked');
-//       });
-//     });
-//   });
+
 // });
 
 
@@ -221,38 +190,143 @@ const setCronTime = require('./../cron/cronUtilities/setCronTime');
 
 //DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
-// describe('cronUtilities', () => {
-//   let cronregex = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
+describe('cronUtilities', () => {
+  let cronregex = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
 
-  // describe('cron/cronUtilities/isCronValid()', () => {
-  //   it('should return a boolean based on whether the input is a valid cron expression', () => {
-  //     let testValue = '20 20 * * *';
-  //     let result = cronregex.test(testValue);
-  //
-  //     expect(result).to.be.true;
-  //     expect(isCronValid(testValue)).to.be.true;
-  //   });
-  // });
-  //
-  // describe('cron/cronUtilities/scheduleCallbackWrapper()', () => {
-  //   it('should return the scheduleCallback() function', () => {
-  //     //The stringified return value of scheduleCallbackWrapper() should be stringResult
-  //     let stringResult = function() {
-  //       findBirthdaysSendEmail(today);
-  //     }.toString().replace(/\s/g, "");
-  //
-  //     let returnValue = scheduleCallback.toString().replace(/\s/g, "");
-  //     expect(returnValue).to.eql(stringResult);
-  //   });
-  // });
+  describe('cron/cronUtilities/isCronValid()', () => {
+    it('should return a boolean based on whether the input is a valid cron expression', () => {
+      let testValue = '20 20 * * *';
+      let result = cronregex.test(testValue);
 
-//   describe('setCronTime()', () => {
-//     it('should return a valid cron time', () => {
-//       let returnCron = setCronTime();
-//       console.log(returnCron)
-//       let result = cronregex.test(returnCron);
-//       expect(returnCron).to.eql('* 8 * * *');
-//       expect(result).to.be.true;
+      expect(result).to.be.true;
+      expect(isCronValid(testValue)).to.be.true;
+    });
+  });
+
+  describe('cron/cronUtilities/scheduleCallbackWrapper()', () => {
+    it('should return the scheduleCallback() function', () => {
+      //The stringified return value of scheduleCallbackWrapper() should be stringResult
+      let stringResult = function() {
+        findBirthdaysSendEmail(today);
+      }.toString().replace(/\s/g, "");
+
+      let returnValue = scheduleCallback.toString().replace(/\s/g, "");
+      expect(returnValue).to.eql(stringResult);
+    });
+  });
+
+  describe('setCronTime()', () => {
+    //setCronTime() will log a message that the cron job is set for '* 8 * * *'
+    it('should return a valid cron time', () => {
+      let returnCron = setCronTime();
+      let result = cronregex.test(returnCron);
+      expect(returnCron).to.eql('* 8 * * *');
+      expect(result).to.be.true;
+    });
+  });
+
+  describe('dateToday()', () => {
+    it("should return today's date with the format '(m)m-(d)d'", () => {
+      let today = dateToday();
+      let validator = date => {
+        return /^([1-9]|1[012])\-(3[01]|[12][0-9]|[1-9])$/.test(date);
+      };
+
+      let dateCheck = validator(today);
+      expect(dateCheck).to.be.true;
+    });
+  });
+  /*
+  This is a unit test of scheduleCallback(), which stubs the function
+  findBirthdaysSendEmail() that is invoked within scheduleCallback().
+  */
+  describe('scheduleCallback()', () => {
+    describe('unit test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
+      let findBirthdaysSendEmailProxy = sinon.stub().returns('invoked');
+      let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
+          {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
+
+      it('should invoke the stub for findBirthdaysSendEmail()', () => {
+        wrapper.scheduleCallback();
+        expect(findBirthdaysSendEmailProxy()).to.eql('invoked');
+      });
+    });
+  });
+  /*
+  An integration test of scheduleCallback().
+  */
+  describe('scheduleCallback()', () => {
+    describe('integration test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
+      beforeEach(function() {
+        return User.deleteMany({}).catch(e => console.log(e));
+      });
+
+      it('should log that an email was successfully sent to the account used to send out birthday emails', (done) => {
+        /*
+        Seed the test database with a user whose birthdate is today.  This email
+         will be sent to the account that sends out birthday emails.
+        */
+        let currentDay = new Date();
+        let year = currentDay.getFullYear();
+        let month = currentDay.getMonth() + 1;
+        let date = currentDay.getDate();
+        let dateArray = [`${year}`, `${month}`, `${date}`];
+        let noZeroPrefix = formattedDateArray(dateArray);
+        let newDate = `${noZeroPrefix[0]}-${noZeroPrefix[1]}-${noZeroPrefix[2]}`;
+
+        let user = new User({
+          email: process.env.EMAILUSERNAME,
+          name: 'Test recipient of a birthday email'
+        });
+        user.date = newDate;
+
+        user.save()
+          .then(user => {
+            console.log(`A test email has been sent to ${user.email}`)})
+          .then(() => {
+            scheduleCallback()
+          })
+          .then(() => {
+            done();
+          })
+          .catch(err => {
+            console.log(err);
+        });
+      });
+    });
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//   describe('findBirthdaysSendEmail()', () => {
+//     it('should invoke a stub that takes the place of User.find()', () => {
+//
+//       // let findBirthdaysSendEmailSpy = sinon.spy(findBirthdaysSendEmail);
+//       let testDate = dateToday();
+//       let BirthdayStub = sinon.stub(User, 'find');
+//       //If BirthdayStub resolves with an email, a real email will be sent.
+//       //To avoid this, it resolves an empty array.
+//       BirthdayStub.resolves([]);
+//
+//       findBirthdaysSendEmailSpy(testDate);
+//       // expect(findBirthdaysSendEmailSpy).to.be.calledWith(testDate);
+//       expect(BirthdayStub).to.be.calledOnce;
+//
+//       BirthdayStub.restore();
 //     });
 //   });
-// });

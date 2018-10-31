@@ -7,9 +7,9 @@ The task created in this module only becomes active with the task.start() comman
 The scheduled task aquires today's date and uses it to invoke a callback
 that finds matches in the User collection and send emails to those matches.
 */
-let userCronTime = '* 8 * * *';
+let userCronTime = '29 10 * * *';
 let validCronTime = setCronTime(userCronTime);
 
 let task = cron.schedule(validCronTime, scheduleCallback);
 
-module.exports = {task};
+module.exports = task;

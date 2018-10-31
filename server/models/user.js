@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const {splitDate} = require('./../utility/splitDate');
-const {formattedDateArray} = require('./../utility/formattedDateArray');
+const formattedDateArray = require('./../utility/formattedDateArray');
 
 //This schema is used in the definition of the "User" model
 let UserSchema = new mongoose.Schema({

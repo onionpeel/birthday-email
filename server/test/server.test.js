@@ -7,52 +7,42 @@ chai.use(require('sinon-chai'));
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const {app} = require('./../server');
-const {User} = require('./../models/user');
-const {MailOptions} = require('./../cron/findAndSendBirthdays/MailOptions');
 const {sendEmailCallback} = require('./../cron/findAndSendBirthdays/sendEmailCallback');
 const {testNodemailer} = require('./testNodemailer');
-const transporter = require('./../cron/findAndSendBirthdays/transporter');
 const {bday, populateBday} = require('./seed/seed');
 const cron = require('node-cron');
 const proxyquire = require('proxyquire');
 const task = require('./../cron/cron');
-//cron
+//cronUtilities
 const isCronValid = require('./../cron/cronUtilities/isCronValid');
 const scheduleCallback = require('./../cron/cronUtilities/scheduleCallbackWrapper').scheduleCallback;
 const scheduleCallbackWrapper = require('./../cron/cronUtilities/scheduleCallbackWrapper').scheduleCallbackWrapper;
 const setCronTime = require('./../cron/cronUtilities/setCronTime');
 const dateToday = require('./../cron/cronUtilities/dateToday');
-//findAndSendBirthdays
 const findBirthdaysSendEmail = require('./../cron/findAndSendBirthdays/findBirthdaysSendEmail');
-
 const formattedDateArray = require('./../utility/formattedDateArray');
+//findAndSendBirthdays
+const MailOptions = require('./../cron/findAndSendBirthdays/MailOptions');
+const nodemailer = require('nodemailer');
+const {transporter, argObj} = require('./../cron/findAndSendBirthdays/transporter');
+//users
+const {User, schemaObj} = require('./../models/user');
+const validator = require('validator');
+const {testSchemaObj} = require('./testSchemaObj');
 
+describe('models directory', () => {
+  describe('user', () => {
+    it('UserSchema should create user objects based on the following schema', () => {
+      //schemaObj and testSchemaObj are separate objects but they have the exact same
+      //properties and values. This test checks to make sure that schemaObj has not been
+      //altered.  This is important since it is the schema that is used to define the
+      //user model.
+      expect(schemaObj.name.minLength).to.eql(testSchemaObj.name.minLength);
+      expect(schemaObj.name.type.toString()).to.eql(testSchemaObj.name.type.toString())
 
-// let findBirthdaysSendEmail = (date) => {
-//   let dateRegex = new RegExp('^\\d{4}-' + date + '$');
-//
-//   User.find({date: {$regex: dateRegex}})
-//     .then(users => {
-//       users.forEach(sendEmailCallback);
-//     })
-//     .catch(e => {
-//       console.log(e);
-//     });
-// };
-
-// describe('findBirthdaysSendEmail()', () => {
-//   it('should invoke User.find() with proper date query', () => {
-//     let findStub = sinon.stub(User, 'find');
-//
-//
-//
-//     findBirthdaysSendEmail('11-27');
-//     let queryObj = {'11-27': {$regex: /^\d{4}-11-27$/}};
-//     expect(findStub).to.be.calledWith(queryObj);
-//   });
-// });
-
-
+    });
+  });
+});
 
 
 
@@ -109,52 +99,9 @@ const formattedDateArray = require('./../utility/formattedDateArray');
 
 
 //**************************************************************
-// describe('findAndSendBirthdays', () => {
-//   describe('MailOptions()', () => {
-//     it('should return a mailOptions object', () => {
-//       let testTo = process.env.EMAILUSERNAME;
-//       let mailOptions = new MailOptions(testTo);
-//       expect(mailOptions.to).to.be.eql(testTo);
-//       expect(mailOptions).to.have.own.property("from");
-//       expect(mailOptions).to.have.own.property("subject");
-//       expect(mailOptions).to.have.own.property("text");
-//     });
-//   });
-//
-//   describe('sendEmailCallback()', () => {
-//     it('should invoke a stub for transport.sendMail()', () => {
-//       let testEmail = process.env.EMAILUSERNAME;
-//       let sendMailStub = sinon.stub(transporter, 'sendMail');
-//
-//       sendEmailCallback(testEmail);
-//       expect(sendMailStub).to.be.calledOnce;
-//       sendMailStub.restore();
-//     });
-//   });
-//
 
 
-  // describe('findBirthdaysSendEmail()', () => {
-  //   it('should send an email based on the object returned from database', done => {
-  //     //This generates a side effect.  Check in testNodemailer.js for usage instructions
-  //     testNodemailer();
-  //     done();
-  //   });
-  // });
 
-
-// });
-
-// describe('cron.js', () => {
-//   describe('isCronValid()', () => {
-//     it('should return true if the input matches the regex', () => {
-//       let cronInput = "10 9 * * *";
-//       expect(isCronValid(cronInput)).to.be.true;
-//     });
-//   });
-//
-
-// });
 
 
 // describe('server.js', () => {
@@ -190,7 +137,8 @@ const formattedDateArray = require('./../utility/formattedDateArray');
 
 //DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //
-describe('cronUtilities', () => {
+
+describe('cronUtilities directory', () => {
   let cronregex = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
 
   describe('cron/cronUtilities/isCronValid()', () => {
@@ -236,30 +184,35 @@ describe('cronUtilities', () => {
       expect(dateCheck).to.be.true;
     });
   });
-  /*
-  This is a unit test of scheduleCallback(), which stubs the function
-  findBirthdaysSendEmail() that is invoked within scheduleCallback().
-  */
-  describe('scheduleCallback()', () => {
-    describe('unit test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
-      let findBirthdaysSendEmailProxy = sinon.stub().returns('invoked');
-      let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
-          {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
 
+  describe('scheduleCallback()', () => {
+    //declare stub for the function that is invoked within scheduleCallback().
+    let findBirthdaysSendEmailProxy = sinon.stub().returns('invoked');
+    //use proxyquire so that findBirthdaysSendEmail() can be stubbed.
+    let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
+        {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
+    /*
+    This is a unit test of scheduleCallback(), which stubs the function
+    findBirthdaysSendEmail() that is invoked within scheduleCallback().
+    */
+    describe('unit test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
       it('should invoke the stub for findBirthdaysSendEmail()', () => {
         wrapper.scheduleCallback();
         expect(findBirthdaysSendEmailProxy()).to.eql('invoked');
       });
     });
-  });
-  /*
-  An integration test of scheduleCallback().
-  */
-  describe('scheduleCallback()', () => {
+    /*
+    An integration test of scheduleCallback(). There are two ways for this test
+    to pass: 1) an email will be sent to the specified email account and 2) the
+    spy, scheduleCallbackSpy, will have been called.
+    */
     describe('integration test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
+      //empty the test database so that only one user exists when the message is sent
       beforeEach(function() {
         return User.deleteMany({}).catch(e => console.log(e));
       });
+      //declare the spy
+      let scheduleCallbackSpy = sinon.spy(wrapper, 'scheduleCallback');
 
       it('should log that an email was successfully sent to the account used to send out birthday emails', (done) => {
         /*
@@ -273,20 +226,23 @@ describe('cronUtilities', () => {
         let dateArray = [`${year}`, `${month}`, `${date}`];
         let noZeroPrefix = formattedDateArray(dateArray);
         let newDate = `${noZeroPrefix[0]}-${noZeroPrefix[1]}-${noZeroPrefix[2]}`;
-
+        //create a new user with today's date
         let user = new User({
           email: process.env.EMAILUSERNAME,
           name: 'Test recipient of a birthday email'
         });
         user.date = newDate;
-
+        //Save the user and invoke scheduleCallback() and test using a spy
         user.save()
           .then(user => {
-            console.log(`A test email has been sent to ${user.email}`)})
-          .then(() => {
-            scheduleCallback()
+            scheduleCallback();
+            return user;
           })
-          .then(() => {
+          .then((user) => {
+            if(expect(scheduleCallbackSpy).to.have.been.called) {
+              console.log(`A test email has been sent to ${user.email}`)
+            };
+            scheduleCallbackSpy.restore();
             done();
           })
           .catch(err => {
@@ -297,36 +253,28 @@ describe('cronUtilities', () => {
   });
 });
 
+describe('findAndSendBirthdays directory', () => {
+  describe('MailOptions()', () => {
+    it('should return a mailOptions object', () => {
+      let testTo = process.env.EMAILUSERNAME;
+      let mailOptions = new MailOptions(testTo);
+      expect(mailOptions.to).to.be.eql(testTo);
+      expect(mailOptions).to.have.own.property("from");
+      expect(mailOptions).to.have.own.property("subject");
+      expect(mailOptions).to.have.own.property("text");
+    });
+  });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-//   describe('findBirthdaysSendEmail()', () => {
-//     it('should invoke a stub that takes the place of User.find()', () => {
-//
-//       // let findBirthdaysSendEmailSpy = sinon.spy(findBirthdaysSendEmail);
-//       let testDate = dateToday();
-//       let BirthdayStub = sinon.stub(User, 'find');
-//       //If BirthdayStub resolves with an email, a real email will be sent.
-//       //To avoid this, it resolves an empty array.
-//       BirthdayStub.resolves([]);
-//
-//       findBirthdaysSendEmailSpy(testDate);
-//       // expect(findBirthdaysSendEmailSpy).to.be.calledWith(testDate);
-//       expect(BirthdayStub).to.be.calledOnce;
-//
-//       BirthdayStub.restore();
-//     });
-//   });
+  describe('transporter', () => {
+    it('should be created with the following object as the argument for createTransport()', () => {
+      let arg = {
+        service: process.env.SERVICE,
+        auth: {
+          user: process.env.EMAILUSERNAME,
+          pass: process.env.EMAILPASSWORD
+        }
+      };
+      expect(argObj).to.eql(arg);
+    });
+  });
+});

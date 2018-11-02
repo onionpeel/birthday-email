@@ -2,12 +2,15 @@ const nodemailer = require('nodemailer');
 
 //This object is the foundation for configuring and sending emails using
 //nodemailer.
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
+
+let argObj = {
+  service: process.env.SERVICE,
   auth: {
     user: process.env.EMAILUSERNAME,
     pass: process.env.EMAILPASSWORD
   }
-});
+};
 
-module.exports = transporter;
+const transporter = nodemailer.createTransport(argObj);
+
+module.exports = {transporter, argObj};

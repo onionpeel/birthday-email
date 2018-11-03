@@ -11,4 +11,4 @@ let formattedDateArray = array => {
   });
 };
 
-module.exports = formattedDateArray;
+module.exports = {formattedDateArray};

@@ -6,6 +6,7 @@ const chai = require('chai');
 chai.use(require('sinon-chai'));
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
+
 const {app} = require('./../server');
 const {sendEmailCallback} = require('./../cron/findAndSendBirthdays/sendEmailCallback');
 const {testNodemailer} = require('./testNodemailer');
@@ -20,7 +21,6 @@ const scheduleCallbackWrapper = require('./../cron/cronUtilities/scheduleCallbac
 const setCronTime = require('./../cron/cronUtilities/setCronTime');
 const dateToday = require('./../cron/cronUtilities/dateToday');
 const findBirthdaysSendEmail = require('./../cron/findAndSendBirthdays/findBirthdaysSendEmail');
-const formattedDateArray = require('./../utility/formattedDateArray');
 //findAndSendBirthdays
 const MailOptions = require('./../cron/findAndSendBirthdays/MailOptions');
 const nodemailer = require('nodemailer');
@@ -29,22 +29,34 @@ const {transporter, argObj} = require('./../cron/findAndSendBirthdays/transporte
 const {User, schemaObj} = require('./../models/user');
 const validator = require('validator');
 const {testSchemaObj} = require('./testSchemaObj');
+const mongoose = require('mongoose');
+//utility
+const {createAcknowledgementDate} = require('./../utility/createAcknowledgementDate');
+const {formattedDateArray} = require('./../utility/formattedDateArray');
+const {splitDate} = require('./../utility/splitDate');
+//middleware
+const {renderHomePage} = require('./../middleware/renderHomePage');
 
-describe('models directory', () => {
-  describe('user', () => {
-    it('UserSchema should create user objects based on the following schema', () => {
-      //schemaObj and testSchemaObj are separate objects but they have the exact same
-      //properties and values. This test checks to make sure that schemaObj has not been
-      //altered.  This is important since it is the schema that is used to define the
-      //user model.
-      expect(schemaObj.name.minLength).to.eql(testSchemaObj.name.minLength);
-      expect(schemaObj.name.type.toString()).to.eql(testSchemaObj.name.type.toString())
 
-    });
+describe('renderHomePage', () => {
+  let req = {
+    body: {}
+  }
+
+  let res = {
+      renderWith: '',
+      render(arg) {
+        this.renderWith = arg;
+      }
+  }
+
+  it('should make a call to render the home view', () => {
+    renderHomePage(req, res);
+    console.log('res.renderWith: ', res.renderWith)
+    expect(res.renderWith).to.include('home');
+    // expect(res.renderWith).to.deep.include({title: 'Birthday Email'});
   });
 });
-
-
 
 
 
@@ -105,9 +117,12 @@ describe('models directory', () => {
 
 
 // describe('server.js', () => {
-//   //Asynchronous
+//   //Integration test
 //   describe('GET /', () => {
 //     it('should make a successful request to the server', (done) => {
+//
+//
+//
 //       request(app)
 //         .get('/')
 //         .expect(200)
@@ -117,6 +132,7 @@ describe('models directory', () => {
 //         });
 //     });
 //   });
+// });
 //   //Synchronous
 //   //If the project is hosted remotely, this test will allow the GET /
 //   //http method to be tested without making a live call to the endpoint.
@@ -191,6 +207,7 @@ describe('cronUtilities directory', () => {
     //use proxyquire so that findBirthdaysSendEmail() can be stubbed.
     let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
         {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
+
     /*
     This is a unit test of scheduleCallback(), which stubs the function
     findBirthdaysSendEmail() that is invoked within scheduleCallback().
@@ -201,6 +218,7 @@ describe('cronUtilities directory', () => {
         expect(findBirthdaysSendEmailProxy()).to.eql('invoked');
       });
     });
+
     /*
     An integration test of scheduleCallback(). There are two ways for this test
     to pass: 1) an email will be sent to the specified email account and 2) the
@@ -275,6 +293,64 @@ describe('findAndSendBirthdays directory', () => {
         }
       };
       expect(argObj).to.eql(arg);
+    });
+  });
+});
+
+describe('models directory', () => {
+  describe('user', () => {
+    it('UserSchema should create user objects based on the following schema', () => {
+      //schemaObj and testSchemaObj are separate objects but they have the exact same
+      //properties and values. This test checks to make sure that schemaObj has not been
+      //altered.  This is important since it is the schema that is used to define the
+      //user model.  This solution is not ideal since the comparison is not automated
+      //and it is repetitious, but it does provide protection to prevent object mutation.
+      expect(schemaObj.name.type.toString()).to.eql(testSchemaObj.name.type.toString());
+      expect(schemaObj.name.minLength).to.eql(testSchemaObj.name.minLength);
+      expect(schemaObj.name.trim).to.eql(testSchemaObj.name.trim);
+      expect(schemaObj.name.required).to.have.all.members(testSchemaObj.name.required);
+
+      expect(schemaObj.email.type.toString()).to.eql(testSchemaObj.email.type.toString());
+      expect(schemaObj.email.validate.validator.toString()).to.eql(testSchemaObj.email.validate.validator.toString());
+      expect(schemaObj.email.validate.message).to.eql(testSchemaObj.email.validate.message);
+      expect(schemaObj.email.minLength).to.eql(testSchemaObj.email.minLength);
+      expect(schemaObj.email.trim).to.eql(testSchemaObj.email.trim);
+      expect(schemaObj.email.required).to.eql(testSchemaObj.email.required);
+
+      expect(schemaObj.date.type.toString()).to.eql(testSchemaObj.date.type.toString());
+      expect(schemaObj.date.minLength).to.eql(testSchemaObj.date.minLength);
+      expect(schemaObj.date.validate.validator.toString()).to.eql(testSchemaObj.date.validate.validator.toString());
+      expect(schemaObj.date.validate.message).to.eql(testSchemaObj.date.validate.message);
+      expect(schemaObj.date.required).to.eql(testSchemaObj.date.required);
+    });
+  });
+});
+
+describe('utility module', () => {
+  describe('createAcknowledgementDate()', () => {
+    it('should return a string that has the date format, "February 5"', () => {
+      let testUser = {date: '2003-2-5'};
+      let expectedValue = 'February 5';
+      let returnValue = createAcknowledgementDate(testUser);
+      expect(returnValue).to.equal(expectedValue);
+    });
+  });
+
+  describe('formattedDateArray()', () => {
+    it('should remove all zeroes from the beginning of each value', () => {
+      let testArray = ['0200', '01', '043'];
+      let expectedArray = ['200', '1', '43'];
+      let returnValue = formattedDateArray(testArray);
+      expect(returnValue).to.eql(expectedArray);
+    });
+  });
+
+  describe('splitDate()', () => {
+    it('should convert a "date" string property into an array whose values are separated by a hyphen', () => {
+      let testUserObject = {date: '1990-05-29'};
+      let expectedValue = ['1990', '05', '29'];
+      let returnValue = splitDate(testUserObject);
+      expect(returnValue).to.eql(expectedValue);
     });
   });
 });

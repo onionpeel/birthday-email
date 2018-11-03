@@ -10,11 +10,11 @@ let schemaObj = {
   },
   email: {
     type: String,
+    minLength: 1,
     validate: {
       validator: validator.isEmail,
       message: '\"{VALUE}\" is not a valid email'
     },
-    minLength: 1,
     trim: true,
     required: true
   },

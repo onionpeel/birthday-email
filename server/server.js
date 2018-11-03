@@ -13,6 +13,7 @@ let app = express();
 let port = process.env.PORT;
 app.use(bodyParser.json());
 let urlEncodedParser = bodyParser.urlencoded({extended: false});
+const {renderHomePage} = require('./middleware/renderHomePage');
 
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
@@ -21,9 +22,7 @@ app.set('view engine', 'handlebars');
 task.start();
 
 //Home page of the project
-app.get('/', (req, res) => {
-  res.render('home', {title: 'Birthday Email'})
-});
+app.get('/', renderHomePage);
 
 //Accept input to create a user object in the database collection
 app.post('/', urlEncodedParser, (req, res) => {

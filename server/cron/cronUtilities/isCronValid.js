@@ -7,4 +7,4 @@ value representing if the input is a valid cron time.
     return cronregex.test(freq);
 };
 
-module.exports = isCronValid;
+module.exports = {isCronValid};

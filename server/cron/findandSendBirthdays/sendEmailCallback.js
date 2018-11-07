@@ -1,4 +1,4 @@
-let MailOptions = require('./MailOptions');
+let {MailOptions} = require('./MailOptions');
 const {transporter} = require('./transporter');
 
 //This is a callback function used in findBirthdaysSendEmail() and is invoked for
@@ -17,4 +17,4 @@ let sendEmailCallback = user => {
   });
 }
 
-module.exports = sendEmailCallback;
+module.exports = {sendEmailCallback};

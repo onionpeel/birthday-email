@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const setCronTime = require('./cronUtilities/setCronTime');
+const {setCronTime} = require('./cronUtilities/setCronTime');
 const {scheduleCallback} = require('./cronUtilities/scheduleCallbackWrapper');
 /*
 The "task" object stores a reference to when the cron job should be executed.

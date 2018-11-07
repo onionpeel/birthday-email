@@ -1,4 +1,4 @@
-const dateToday = require('./../../cron/cronUtilities/dateToday');
+const {dateToday} = require('./../../cron/cronUtilities/dateToday');
 const {User} = require('./../../models/user');
 
 const bday = [{

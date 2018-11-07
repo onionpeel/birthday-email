@@ -1,5 +1,5 @@
 const {User} = require('./../../models/user');
-const sendEmailCallback = require('./sendEmailCallback');
+const {sendEmailCallback} = require('./sendEmailCallback');
 const nodemailer = require('nodemailer');
 /*
 This takes a string input from dateToday() and uses that to create a regex.
@@ -20,4 +20,4 @@ let findBirthdaysSendEmail = (date) => {
     });
 };
 
-module.exports = findBirthdaysSendEmail;
+module.exports = {findBirthdaysSendEmail};

@@ -1,4 +1,4 @@
-const isCronValid = require('./isCronValid');
+const {isCronValid} = require('./isCronValid');
 
 //The input is a cron time.  The output is a cron time.  If no time is set or
 //the the time is invalid, it will be set to 8:00 a.m. by default.  Otherwise,
@@ -12,4 +12,4 @@ function setCronTime(time = '* 8 * * *') {
   return time = '* 8 * * *';
 };
 
-module.exports = setCronTime;
+module.exports = {setCronTime};

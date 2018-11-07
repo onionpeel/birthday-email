@@ -1,5 +1,5 @@
-const dateToday = require('./dateToday');
-const findBirthdaysSendEmail = require('./../findAndSendBirthdays/findBirthdaysSendEmail');
+const {dateToday} = require('./dateToday');
+const {findBirthdaysSendEmail} = require('./../findAndSendBirthdays/findBirthdaysSendEmail');
 
 /*
 No input.  The output is the scheduleCallback() function.  scheduleCallback() is

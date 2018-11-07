@@ -8,4 +8,4 @@ const MailOptions = function (to, name) {
   this.html = `<p>Hey, ${name}, did you forget your own birthday?  Good thing you set up the Birthday-Email program to remember. Happy Birthday!</p>`;
 };
 
-module.exports = MailOptions;
+module.exports = {MailOptions};

@@ -8,6 +8,7 @@ const task = require('./cron/cron');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const {createAcknowledgementDate} = require('./utility/createAcknowledgementDate');
+const {saveUser} = require('./middleware/saveUser');
 
 let app = express();
 let port = process.env.PORT;
@@ -25,36 +26,64 @@ task.start();
 app.get('/', renderHomePage);
 
 //Accept input to create a user object in the database collection
-app.post('/', urlEncodedParser, (req, res) => {
-    let user = new User({
-      email: req.body.email,
-      date: req.body.date,
-      name: req.body.first_name
-    });
+// app.post('/', urlEncodedParser, (req, res) => {
+//     let user = new User({
+//       email: req.body.email,
+//       date: req.body.date,
+//       name: req.body.first_name
+//     });
+//
+//     //Remove any preceding zeroes in the date
+//     user.formatDate();
+//     //After being saved to the database, prepare the user object to be rendered.
+//     user.save().then(user => {
+//       user.date = createAcknowledgementDate(user);
+//       user.title = 'Birthday Email';
+//       res.status(200).render('acknowledgement', user);
+//
+//     }).catch(err => {
+//       //The error message to be rendered is based on the error object.
+//       for (let key in err.errors) {
+//         if(err.errors[key].value == false) {
+//           err.errorMessage = `A valid ${key} is required`
+//         }else if (err.errors[key].value === '-undefined-undefined') {
+//           err.errorMessage = 'A valid birthdate is required'
+//         } else {
+//           let errorMessage = err.errors[key].message;
+//           err.errorMessage = errorMessage
+//         }
+//       };
+//       res.status(400).render('error', err);
+//     });
+// });
 
-    //Remove any preceding zeroes in the date
-    user.formatDate();
-    //After being saved to the database, prepare the user object to be rendered.
-    user.save().then(user => {
-      user.date = createAcknowledgementDate(user);
-      user.title = 'Birthday Email'
-      res.status(200).render('acknowledgement', user);
 
-    }).catch(err => {
-      //The error message to be rendered is based on the error object.
-      for (let key in err.errors) {
-        if(err.errors[key].value == false) {
-          err.errorMessage = `A valid ${key} is required`
-        }else if (err.errors[key].value === '-undefined-undefined') {
-          err.errorMessage = 'A valid birthdate is required'
-        } else {
-          let errorMessage = err.errors[key].message;
-          err.errorMessage = errorMessage
-        }
-      };
-      res.status(400).render('error', err);
-    });
+
+app.post('/', urlEncodedParser, async (req, res) => {
+  //The 'user' object will either be the object that is sent back from the
+  //database or it will be an error object.  If it is an error object, it is
+  //handled in the 'else' block and is renamed, 'err'.
+  let user = await saveUser(req, res);
+
+  if(!user.errors) {
+    res.status(200).render('acknowledgement', user);
+  } else {
+    let err = user;
+    //The error message to be rendered is based on the error object.
+    for (let key in err.errors) {
+      if(err.errors[key].value == false) {
+        err.errorMessage = `A valid ${key} is required`
+      }else if (err.errors[key].value === '-undefined-undefined') {
+        err.errorMessage = 'A valid birthdate is required'
+      } else {
+        let errorMessage = err.errors[key].message;
+        err.errorMessage = errorMessage
+      }
+    };
+    res.status(400).render('error', err);
+  };
 });
+
 
 
 app.listen(port, () => {

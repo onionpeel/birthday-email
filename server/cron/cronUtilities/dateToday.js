@@ -7,4 +7,4 @@ let dateToday = () => {
   return `${month}-${date}`;
 };
 
-module.exports = dateToday;
+module.exports = {dateToday};

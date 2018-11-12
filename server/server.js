@@ -25,48 +25,20 @@ task.start();
 //Home page of the project
 app.get('/', renderHomePage);
 
-//Accept input to create a user object in the database collection
-// app.post('/', urlEncodedParser, (req, res) => {
-//     let user = new User({
-//       email: req.body.email,
-//       date: req.body.date,
-//       name: req.body.first_name
-//     });
-//
-//     //Remove any preceding zeroes in the date
-//     user.formatDate();
-//     //After being saved to the database, prepare the user object to be rendered.
-//     user.save().then(user => {
-//       user.date = createAcknowledgementDate(user);
-//       user.title = 'Birthday Email';
-//       res.status(200).render('acknowledgement', user);
-//
-//     }).catch(err => {
-//       //The error message to be rendered is based on the error object.
-//       for (let key in err.errors) {
-//         if(err.errors[key].value == false) {
-//           err.errorMessage = `A valid ${key} is required`
-//         }else if (err.errors[key].value === '-undefined-undefined') {
-//           err.errorMessage = 'A valid birthdate is required'
-//         } else {
-//           let errorMessage = err.errors[key].message;
-//           err.errorMessage = errorMessage
-//         }
-//       };
-//       res.status(400).render('error', err);
-//     });
-// });
-
-
-
 app.post('/', urlEncodedParser, async (req, res) => {
   //The 'user' object will either be the object that is sent back from the
   //database or it will be an error object.  If it is an error object, it is
   //handled in the 'else' block and is renamed, 'err'.
+  // console.log('BEFORE RESULT', req.body);
   let user = await saveUser(req, res);
-
+  // console.log('THE RESULT: ',user);
+  // res.status(200).send(user)
+  //Send the client an acknowledgement that a birthday email will be sent
+  //based on the arguments provided by the client
   if(!user.errors) {
     res.status(200).render('acknowledgement', user);
+  //If the attempt to set up the birthday email fails, send back a message to
+  //the client explaining why the arguments were invalid.
   } else {
     let err = user;
     //The error message to be rendered is based on the error object.
@@ -83,8 +55,6 @@ app.post('/', urlEncodedParser, async (req, res) => {
     res.status(400).render('error', err);
   };
 });
-
-
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

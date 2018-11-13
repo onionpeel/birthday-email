@@ -48,7 +48,7 @@ If no value is set, the default time will 8:00 a.m.
 8.  Go to `localhost:3000` and fill out the form.  If you want to see it work without waiting until your next birthday, set the birthdate to today's date and go back into `server/cron/cron.js` to schedule the cron job to run a few minutes after you execute `node server/server.js`.
 
 ## Notes
-The goal of this project was to learn fullstack development by creating a birthday email application.  I
+The goal of this project was to learn fullstack development by creating a birthday email application.
 
 The project could be built out further to tackle other issues such as leap year birthdays, validation of cron.schedule() inputs, duplicate email accounts and enabling users to revise their submission or prevent an email from being sent.
 

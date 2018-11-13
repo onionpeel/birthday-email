@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {mongoose} = require('./db/mongoose');
 const {User} = require('./models/user');
-const task = require('./cron/cron');
+const {task} = require('./cron/cron');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const {createAcknowledgementDate} = require('./utility/createAcknowledgementDate');
@@ -25,14 +25,12 @@ task.start();
 //Home page of the project
 app.get('/', renderHomePage);
 
+//Create a new user based on client input
 app.post('/', urlEncodedParser, async (req, res) => {
   //The 'user' object will either be the object that is sent back from the
   //database or it will be an error object.  If it is an error object, it is
   //handled in the 'else' block and is renamed, 'err'.
-  // console.log('BEFORE RESULT', req.body);
   let user = await saveUser(req, res);
-  // console.log('THE RESULT: ',user);
-  // res.status(200).send(user)
   //Send the client an acknowledgement that a birthday email will be sent
   //based on the arguments provided by the client
   if(!user.errors) {

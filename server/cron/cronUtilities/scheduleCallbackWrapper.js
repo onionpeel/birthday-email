@@ -20,6 +20,5 @@ let scheduleCallbackWrapper = () => {
 
 let scheduleCallback = scheduleCallbackWrapper();
 
-// module.exports = {scheduleCallback, scheduleCallbackWrapper};
 module.exports.scheduleCallback = scheduleCallback;
 module.exports.scheduleCallbackWrapper = scheduleCallbackWrapper;

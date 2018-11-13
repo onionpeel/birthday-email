@@ -2,6 +2,8 @@ const {User} = require('./../models/user');
 const {mongoose} = require('./../db/mongoose');
 const {createAcknowledgementDate} = require('./../utility/createAcknowledgementDate');
 
+//The input is from the request object in POST /.  saveUser() saves a new user
+//object to the database and returns the object that the database sends back.
 let saveUser = async (req, res) => {
   let user = new User({
     email: req.body.email,

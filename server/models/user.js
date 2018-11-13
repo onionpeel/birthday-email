@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-// const validator = require('validator');
+const {mongoose} = require('./../db/mongoose');
 const {splitDate} = require('./../utility/splitDate');
 const {formattedDateArray} = require('./../utility/formattedDateArray');
 const {schemaObj} = require('./schemaObj');
@@ -16,6 +15,7 @@ UserSchema.methods.formatDate = function() {
   user.date = newDate;
 };
 
+//The model that is used to create each new instance of a user in the POST / route.
 let User = mongoose.model('User', UserSchema);
 
 

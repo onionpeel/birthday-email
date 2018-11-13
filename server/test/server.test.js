@@ -1,4 +1,3 @@
-const nock = require('nock');
 const request = require('supertest');
 const expect = require('chai').expect;
 const sinon = require('sinon');
@@ -8,37 +7,41 @@ const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 
 const {app} = require('./../server');
-const {sendEmailCallback} = require('./../cron/findAndSendBirthdays/sendEmailCallback');
-const {testNodemailer} = require('./testNodemailer');
-const {bday, populateBday} = require('./seed/seed');
 const cron = require('node-cron');
-const proxyquire = require('proxyquire');
-const task = require('./../cron/cron');
+
+//middleware
+const {renderHomePage} = require('./../middleware/renderHomePage');
+const {saveUser} = require('./../middleware/saveUser');
+
 //cronUtilities
 const {isCronValid} = require('./../cron/cronUtilities/isCronValid');
 const scheduleCallback = require('./../cron/cronUtilities/scheduleCallbackWrapper').scheduleCallback;
 const scheduleCallbackWrapper = require('./../cron/cronUtilities/scheduleCallbackWrapper').scheduleCallbackWrapper;
+const proxyquire = require('proxyquire');
 const {setCronTime} = require('./../cron/cronUtilities/setCronTime');
 const {dateToday} = require('./../cron/cronUtilities/dateToday');
+const validator = require('validator');
 const {findBirthdaysSendEmail} = require('./../cron/findAndSendBirthdays/findBirthdaysSendEmail');
+
 //findAndSendBirthdays
 const {MailOptions} = require('./../cron/findAndSendBirthdays/MailOptions');
 const nodemailer = require('nodemailer');
 const {transporter, argObj} = require('./../cron/findAndSendBirthdays/transporter');
-//users
-const {User, schemaObj} = require('./../models/user');
-const validator = require('validator');
-const {testSchemaObj} = require('./testSchemaObj');
-const mongoose = require('mongoose');
+const {sendEmailCallback} = require('./../cron/findAndSendBirthdays/sendEmailCallback');
+
 //utility
 const {createAcknowledgementDate} = require('./../utility/createAcknowledgementDate');
 const {formattedDateArray} = require('./../utility/formattedDateArray');
 const {splitDate} = require('./../utility/splitDate');
-//middleware
-const {renderHomePage} = require('./../middleware/renderHomePage');
-const {saveUser} = require('./../middleware/saveUser');
-//routes
 
+//models
+const {User, schemaObj} = require('./../models/user');
+const {testSchemaObj} = require('./testSchemaObj');
+const {mongoose} = require('./../db/mongoose');
+
+beforeEach('Empty database', done => {
+  User.deleteMany({}).then(() => done()).catch(e => console.log(e));
+});
 
 describe('ROUTES', () => {
   describe('POST /', () => {
@@ -51,15 +54,12 @@ describe('ROUTES', () => {
               first_name: "Person"
               })
         .expect(200)
-        .expect(res => {
-          console.log('WITHIN SUPERTEST: ', res.body)
-        })
         .end(done);
     });
   });
 
   describe('GET /', () => {
-    it('should successfully render the home view--INTEGRETION TEST', (done) => {
+    it('should successfully render the home view', (done) => {
       request(app)
         .get('/')
         .expect(200)
@@ -73,14 +73,11 @@ describe('ROUTES', () => {
 
 describe('middleware directory', () => {
   describe('renderHomePage', () => {
-    it('should call render() the home view', () => {
+    it('should call render() with the "home" view', () => {
       let req = {};
       let res = {render: sinon.spy()};
       renderHomePage(req, res);
-      // expect(res.render).to.be.called;
-
       expect(res.render).to.be.calledWith('home', {title: 'Birthday Email'});
-      // res.render.restore()
     });
   });
 
@@ -89,35 +86,16 @@ describe('middleware directory', () => {
       let inputObject = {
                           body: {
                                 email: "someFakeEmail@mail.com",
-                                date: "1899-11-24",
+                                date: "1899-3-24",
                                 first_name: "namelessPerson"
                               }
                         };
 
       let actualResult = await saveUser(inputObject);
       expect(actualResult.email).to.eql(inputObject.body.email);
-      expect(actualResult.date).to.eql('November 24');
+      expect(actualResult.date).to.eql('March 24');
       expect(actualResult.name).to.eql(inputObject.body.first_name);
       expect(actualResult.title).to.eql('Birthday Email');
-    });
-  });
-});
-
-describe('scheduleCallback()', () => {
-  //declare stub for the function that is invoked within scheduleCallback().
-  let findBirthdaysSendEmailProxy = sinon.stub().returns('invoked');
-  //use proxyquire so that findBirthdaysSendEmail() can be stubbed.
-  let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
-      {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
-
-  /*
-  This is a unit test of scheduleCallback(), which stubs the function
-  findBirthdaysSendEmail() that is invoked within scheduleCallback().
-  */
-  describe('unit test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
-    it('should invoke the stub for findBirthdaysSendEmail()', () => {
-      wrapper.scheduleCallback();
-      expect(findBirthdaysSendEmailProxy()).to.eql('invoked');
     });
   });
 });
@@ -126,7 +104,7 @@ describe('cronUtilities directory', () => {
   let cronregex = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
 
   describe('cron/cronUtilities/isCronValid()', () => {
-    it('should return a boolean based on whether the input is a valid cron expression', () => {
+    it('should return a boolean based on a valid cron expression', () => {
       let testValue = '20 20 * * *';
       let result = cronregex.test(testValue);
 
@@ -167,6 +145,24 @@ describe('cronUtilities directory', () => {
       expect(dateCheck).to.be.true;
     });
   });
+
+  describe('scheduleCallback()', () => {
+    //declare stub for the function that is invoked within scheduleCallback().
+    let findBirthdaysSendEmailProxy = sinon.stub().returns('invoked');
+    //use proxyquire so that findBirthdaysSendEmail() can be stubbed.
+    let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
+        {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailProxy});
+    /*
+    This is a unit test of scheduleCallback(), which stubs the function
+    findBirthdaysSendEmail() that is invoked within scheduleCallback().
+    */
+    describe('unit test:  findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
+      it('should invoke the stub for findBirthdaysSendEmail()', () => {
+        wrapper.scheduleCallback();
+        expect(findBirthdaysSendEmailProxy()).to.eql('invoked');
+      });
+    });
+  });
 });
 
 
@@ -183,7 +179,7 @@ describe('findAndSendBirthdays directory', () => {
   });
 
   describe('transporter', () => {
-    it('should be created with the following object as the argument for createTransport()', () => {
+    it('should be instantiated with the following object as the argument for createTransport()', () => {
       let arg = {
         service: process.env.SERVICE,
         auth: {
@@ -191,6 +187,7 @@ describe('findAndSendBirthdays directory', () => {
           pass: process.env.EMAILPASSWORD
         }
       };
+      //'argObj' is the object used to create the tranporter object in tranporter.js
       expect(argObj).to.eql(arg);
     });
   });
@@ -255,26 +252,11 @@ describe('models directory', () => {
 });
 
 /*
-An integration test of scheduleCallback(). There are two ways for this test
-to pass: 1) an email will be sent to the specified email account and 2) the
-spy, scheduleCallbackSpy, will have been called.
+An integration test of scheduleCallback(). An email will be sent to the
+specified email account.
 */
 describe('scheduleCallback()', () => {
-    describe('integration test--findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
-    //empty the test database so that only one user exists when the message is sent
-    // beforeEach(done => {
-    //   User.deleteMany({}).then(() => done()).catch(e => console.log(e));
-    // });
-
-    //declare the spy
-    // let scheduleCallbackSpy = sinon.spy(wrapper, 'scheduleCallback');
-
-    // let findBirthdaysSendEmailSpy = sinon.spy(wrapper, 'scheduleCallback');
-    //
-    //
-    // let wrapper = proxyquire('./../cron/cronUtilities/scheduleCallbackWrapper',
-    //     {'./../findAndSendBirthdays/findBirthdaysSendEmail': findBirthdaysSendEmailSpy});
-
+  describe('integration test:  findBirthdaysSendEmail() as a dependency inside of scheduleCallback()', () => {
     it('should log that an email was successfully sent to the account used to send out birthday emails', (done) => {
       /*
       Seed the test database with a user whose birthdate is today.  This email
@@ -301,10 +283,6 @@ describe('scheduleCallback()', () => {
           return user;
         })
         .then((user) => {
-          // if(expect(scheduleCallbackSpy).to.have.been.called) {
-          //   console.log(`A test email has been sent to ${user.email}`)
-          // };
-          // scheduleCallbackSpy.restore();
           console.log(`A test email has been sent to ${user.email}`)
           done();
         })

@@ -32,8 +32,7 @@ For testing and development, a `config.json` file with email account credentials
 
 Instructions for production setup will be forthcoming.
 
-##Installation
-
+## Installation
 1. git clone https://github.com/onionpeel/birthday-email.git
 2. cd birthday-email
 3. npm install
@@ -48,7 +47,7 @@ If no value is set, the default time will 8:00 a.m.
 7.  Make sure all the changes are saved and execute the program:  `node server/server.js`.
 8.  Go to `localhost:3000` and fill out the form.  If you want to see it work without waiting until your next birthday, set the birthdate to today's date and go back into `server/cron/cron.js` to schedule the cron job to run a few minutes after you execute `node server/server.js`.
 
-##Notes
+## Notes
 The goal of this project was to learn fullstack development by creating a birthday email application.  I
 
 The project could be built out further to tackle other issues such as leap year birthdays, validation of cron.schedule() inputs, duplicate email accounts and enabling users to revise their submission or prevent an email from being sent.
